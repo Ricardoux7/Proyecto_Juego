@@ -1,3 +1,20 @@
+/**
+
+ * @description: Juego de combate por turnos aleatorios entre personajes
+ * @class: Personaje (este  es el objeto base de cada personaje)
+ * @constructor define los atributos del personaje
+ * @param {string} nombre - Nombre del personaje
+ * @param {number} vida - Vida del personaje
+ * @param {number} ataque - Ataque del personaje
+ * @param {number} defensa - Defensa del personaje (un buleano que indica si el personaje se defiende o no)
+ * @param {number} velocidad - Velocidad del personaje
+ * @param {array} habilidades - Array de objetos que contienen el nombre y el daño de cada habilidad
+ * @param {number} probabilidadEmpezar - Probabilidad de que el personaje ataque primero
+ * @param {function} habilidadEspecial - Función que contiene la habilidad especial del personaje
+ * @param {string} infoHabilidad - Información sobre la habilidad especial del personaje
+ * @param {number} usado - Indica si la habilidad especial ya fue usada o no
+*/
+
 class Personaje{
     constructor(nombre, vida, ataque, defensa, velocidad, habilidades, probabilidadEmpezar, habilidadEspecial, infoHabilidad, usado){
     this.nombre = nombre
@@ -18,12 +35,22 @@ class Personaje{
     }
 }
 let orden = []
+/**
+ * @description: Habilidad especial de mago de hielo, congela al enemigo y le hace 10 de daño
+ * @param {object} atacante - Personaje que ataca
+ * @param {object} atacado - Personaje que recibe el ataque
+ * @returns {void}
+ */
 const magoDeHieloHabilidad = (atacante, atacado) => {
   console.log(`el mago de hielo ha usado su habilidad especial y ha congelado a ${atacado.nombre}`);
   atacado.vida = atacado.vida - 10;
   atacado.nombre = atacado.nombre + ` (congelado)`;
   atacante.usado++;
 };
+
+/**
+ * @description: Habilidad especial de mago de fuego, roba el 25% de la vida del enemigo
+ */
 
 let magoDeFuegoHabilidad = (atacante, atacado) => {
   console.log(`el mago de fuego ha usado su habilidad especial y se ha robado el 25% de la vida de ${atacado.nombre}`);
@@ -37,6 +64,13 @@ let magoDeFuegoHabilidad = (atacante, atacado) => {
   atacante.usado++;
 }
 
+/**
+ * @description: Habilidad especial de guerrero lider, contraataca al enemigo y le hace la mitad del daño
+ * @param {object} atacante - Personaje que ataca
+ * @param {object} atacado - Personaje que recibe el ataque
+ * @returns {void}
+ */
+
 let guerreroLiderHabilidad = (atacante, atacado) => {
   console.log(`el guerrero lider ha usado su habilidad especial y ha contraatacado a ${atacado.nombre}`);
   let dañoContraataque = Math.floor(atacado.ataque / 2);
@@ -47,13 +81,24 @@ let guerreroLiderHabilidad = (atacante, atacado) => {
   atacante.usado++;
 }
 
-let guerreroVeteranoHabilidad = (atacante, atacado) => {
+/**
+ * @description: Habilidad especial de guerrero veterano, duplica su ataque
+ * @param {object} atacante - Personaje que ataca
+ */
+
+let guerreroVeteranoHabilidad = (atacante) => {
   console.log(`el guerrero veterano ha usado su habilidad especial y ha duplicado su ataque`);
   atacante.ataque = atacante.ataque * 2;
   atacante.usado++;
 }
 
-let arqueroHabilidad = (atacante, atacado) => {
+/**
+ * @description: Habilidad especial de arquero, se cura un 25% de su vida
+ * @param {object} atacante - Personaje que ataca
+ * @returns {void}
+ */
+
+let arqueroHabilidad = (atacante) => {
   console.log(`el arquero ha usado su habilidad especial y se ha curado un 25% de su vida`);
   let vidaCurada = Math.floor(atacante.vida * 0.25);
   atacante.vida = atacante.vida + vidaCurada;
@@ -79,6 +124,13 @@ let personajes = [magoDeHielo, magoDeFuego, guerreroLider, guerreroVeterano, arq
 let personajesVivos = personajes.length
 let personajesMuertos = 0
 
+/**
+ * @description: Ordena los personajes por velocidad y asigna una probabilidad de empezar a atacar
+ * @param {array} personajes - Array de personajes
+ * @param {array} velocidades - Array de velocidades, se usa para evitar que dos personajes tengan la misma velocidad
+ * @returns {void}
+ */
+
 const ordenAtaqueF = () => {
 let velocidades = [];
   for (let i = 0; i < personajes.length; i++) {
@@ -96,6 +148,14 @@ let velocidades = [];
   console.log(orden.map(personaje => personaje.nombre + ` (${personaje.probabilidadEmpezar})`).join(`\n`));
   console.log(`---------------------------------------------------------------------------------`);
 }
+
+/**
+ * @function ataques
+ * @description: Realiza los ataques entre los personajes
+ * @param {array} orden - Array de personajes, sera el orden de ataque
+ * @returns {void}
+ * @example: ataques() 
+ */
 ataques = () => {
   for (let i = 0; i < orden.length; i++) {
     let atacante = orden[i];
