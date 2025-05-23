@@ -57,10 +57,10 @@ let magoDeFuegoHabilidad = (atacante, atacado) => {
   let vidaRobada = Math.floor(atacado.vida * 0.25);
   atacado.vida = atacado.vida - vidaRobada;
   atacante.vida = atacante.vida + vidaRobada;
-  console.log(`vida del mago de fuego: ${atacante.vida} vida del enemigo: ${atacado.vida}`);
   if(atacante.vida > 100) {
     atacante.vida = 100;
   }
+  console.log(`vida del mago de fuego: ${atacante.vida} vida del enemigo: ${atacado.vida}`);
   atacante.usado++;
 }
 
@@ -72,23 +72,25 @@ let magoDeFuegoHabilidad = (atacante, atacado) => {
  */
 
 let guerreroLiderHabilidad = (atacante, atacado) => {
-  console.log(`el guerrero lider ha usado su habilidad especial y ha contraatacado a ${atacado.nombre}`);
-  let dañoContraataque = Math.floor(atacado.ataque / 2);
-  atacado.vida = atacado.vida - dañoContraataque;
-  if(atacado.vida < 0) {
-    atacado.vida = 0;
-  }
+  habilidadRobada = Math.floor(Math.random() * atacado.habilidades.length);
+  let habilidadRobadaNombre = atacado.habilidades[habilidadRobada].nombre;
+  console.log(`el guerrero lider ha usado su habilidad especial y ha robado la habilidad ${habilidadRobadaNombre} de ${atacado.nombre}`);
+  atacante.habilidades.push({nombre: habilidadRobadaNombre, daño: atacado.habilidades[habilidadRobada].daño});
   atacante.usado++;
 }
 
 /**
  * @description: Habilidad especial de guerrero veterano, duplica su ataque
  * @param {object} atacante - Personaje que ataca
+ * @param {object} atacado - Personaje que recibe el ataque
+ * @returns {void}
  */
 
-let guerreroVeteranoHabilidad = (atacante) => {
-  console.log(`el guerrero veterano ha usado su habilidad especial y ha duplicado su ataque`);
+let guerreroVeteranoHabilidad = (atacante, atacado) => {
   atacante.ataque = atacante.ataque * 2;
+  atacado.vida = atacado.vida - atacante.ataque;
+  console.log(`el guerrero veterano ha usado su habilidad especial y ha duplicado su ataque, atacando a ${atacado.nombre} con un daño de ${atacante.ataque}, dejandole de vida ${atacado.vida}`);
+  atacante.ataque = Math.floor(atacante.ataque / 2);
   atacante.usado++;
 }
 
@@ -99,18 +101,18 @@ let guerreroVeteranoHabilidad = (atacante) => {
  */
 
 let arqueroHabilidad = (atacante) => {
-  console.log(`el arquero ha usado su habilidad especial y se ha curado un 25% de su vida`);
   let vidaCurada = Math.floor(atacante.vida * 0.25);
   atacante.vida = atacante.vida + vidaCurada;
   if(atacante.vida > 100) {
     atacante.vida = 100;
   }
+  console.log(`el arquero ha usado su habilidad especial y se ha curado un 25% de su vida, ahora tiene ${atacante.vida} de vida`);
   atacante.usado++;
 }
 
 let magoDeHielo = new Personaje(`Mago de Hielo`, 100, 13, Math.floor(Math.random()*2), 25, [{nombre: `Bola de hielo`, daño:12}, {nombre:`Tormenta de Nieve`, daño: 20}, {nombre: `puño`, daño: (Math.floor(Math.random()*15))}], 0, magoDeHieloHabilidad, `Congela al enemigo durante 1 turno`, 0)
 let magoDeFuego = new Personaje(`Mago de Fuego`, 100, 30, Math.floor(Math.random()*2), 40, [{nombre: `Bola de fuego`, daño:23}, {nombre:`Lluvia volcanica`, daño: 25}, {nombre: `Rayo`, daño: 30}, {nombre: `puño`, daño: (Math.floor(Math.random()*15))}], 0, magoDeFuegoHabilidad, `el daño que le hace al enemigo se lo roba`, 0)
-let guerreroLider = new Personaje(`Guerrero Lider`, 100, 30, Math.floor(Math.random()*2), 35, [{nombre: `Espada`, daño:30}, {nombre: `Hacha`, daño:40}, {nombre: `Lanza`, daño: 20}, {nombre: `Martillo`, daño: 18}, {nombre: `puño`, daño: (Math.floor(Math.random()*15))}], 0, guerreroLiderHabilidad, `devuelve la mitad del daño que le hace el enemigo`, 0)
+let guerreroLider = new Personaje(`Guerrero Lider`, 100, 30, Math.floor(Math.random()*2), 35, [{nombre: `Espada`, daño:30}, {nombre: `Hacha`, daño:40}, {nombre: `Lanza`, daño: 20}, {nombre: `Martillo`, daño: 18}, {nombre: `puño`, daño: (Math.floor(Math.random()*15))}], 0, guerreroLiderHabilidad, `roba una de las habilidades de un enemigo`, 0)
 let guerreroVeterano = new Personaje(`Guerrero Veterano`, 100, 20, Math.floor(Math.random()*2), 25, [{nombre: `Katana`, daño:30}, {nombre: `canon`, daño:40}, {nombre: `Lanza`, daño: 20}, {nombre: `Machete`, daño: 18}, {nombre: `puño`, daño: (Math.floor(Math.random()*15))}], 0, guerreroVeteranoHabilidad, `duplica el ataque x2 durante 1 turno`, 0)
 let arquero = new Personaje(`Arquero`, 100, 10, Math.floor(Math.random()*2), 25, [{nombre: `Flecha`, daño:30}, {nombre: `Flecha explosiva`, daño:40}, {nombre: `Flecha de fuego`, daño: 20}, {nombre: `flecha venenosa`, daño: 18}, {nombre: `puño`, daño: (Math.floor(Math.random()*15))}], 0, arqueroHabilidad, `se cura un 25% de su vida`, 0)
 
@@ -125,10 +127,12 @@ let personajesVivos = personajes.length
 let personajesMuertos = 0
 
 /**
+ * @function ordenAtaqueF
  * @description: Ordena los personajes por velocidad y asigna una probabilidad de empezar a atacar
  * @param {array} personajes - Array de personajes
  * @param {array} velocidades - Array de velocidades, se usa para evitar que dos personajes tengan la misma velocidad
  * @returns {void}
+ * @example: ordenAtaqueF()
  */
 
 const ordenAtaqueF = () => {
